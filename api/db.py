@@ -24,6 +24,7 @@ def close_db(e=None):
     db = g.pop('db', None)
 
     if db is not None:
+        db.commit()
         db.close()
 
 
@@ -41,14 +42,29 @@ def init_db():
 def insert_db(game :tuple):
     cursor = get_cursor()
 
-    cursor.execute('INSERT INTO Games VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', game)
+    cursor.execute('''INSERT INTO Games(name,description, genre,developer,ram_min,cpu_min,
+    gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
+
 
     return cursor.lastrowid
 
-    
+def readall_db():
+    cursor = get_cursor()
+    results = []
 
+    cursor.execute('SELECT * FROM Games')
+    for row in cursor.fetchall():
+        results.append(tuple(row))
 
+    return results
 
+def deleteall_db():
+    cursor = get_cursor()
+
+    cursor.execute('DELETE FROM Games')
+
+    return cursor.rowcount
 
 @click.command('init-db')
 @with_appcontext
