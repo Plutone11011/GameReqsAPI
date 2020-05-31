@@ -1,6 +1,8 @@
 import time, os, sys
 from flask import Flask
-from . import db, dml, query
+from api.db import db
+from api.views import dml, query
+from api.utils import commands
 
 def create_app(test_config=None):
     # create and configure the app
@@ -32,7 +34,7 @@ def create_app(test_config=None):
 
     register_endpoints(app)
 
-    db.init_app(app)
+    commands.init_app(app)
     return app
 
 

@@ -1,6 +1,6 @@
 from flask import jsonify
 
-from . import db
+from api.db import db
 
 def get_every_game():
     #validate

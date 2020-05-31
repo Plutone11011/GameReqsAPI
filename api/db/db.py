@@ -1,9 +1,5 @@
 import sqlite3
-
-import click
 from flask import current_app, g
-from flask.cli import with_appcontext
-
 
 def get_db():
     if 'db' not in g:
@@ -36,7 +32,7 @@ def get_cursor():
 def init_db():
     db = get_db()
 
-    with current_app.open_resource('schema.sql') as f:
+    with current_app.open_resource('db/schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
 def insert_db(game :tuple):
@@ -65,14 +61,3 @@ def deleteall_db():
     cursor.execute('DELETE FROM Games')
 
     return cursor.rowcount
-
-@click.command('init-db')
-@with_appcontext
-def init_db_command():
-    init_db()
-    click.echo('Initialized the database.')
-
-
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)

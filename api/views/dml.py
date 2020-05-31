@@ -1,7 +1,7 @@
 from json import dumps
 from flask import current_app, request, Response
 
-from . import db
+from api.db import db
 
 def validate(json_data):
     #response in application/problem+json format
