@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS Games (
     id INTEGER PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
-    genre TEXT,
     developer TEXT,
     ram_min INTEGER NOT NULL,
     cpu_min TEXT NOT NULL,

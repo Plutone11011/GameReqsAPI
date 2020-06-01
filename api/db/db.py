@@ -1,16 +1,14 @@
 import sqlite3
 from flask import current_app, g
 
+
 def get_db():
     if 'db' not in g:
         try:
-            g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-            )
+            g.db = sqlite3.connect(current_app.config['DATABASE'], detect_types=sqlite3.PARSE_DECLTYPES)
         except sqlite3.Error as e:
             print('Connection error: ' + e)
-            #send user a notification
+#            send user a notification
         g.db.row_factory = sqlite3.Row
 
     return g.db
@@ -35,15 +33,16 @@ def init_db():
     with current_app.open_resource('db/schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+
 def insert_db(game :tuple):
     cursor = get_cursor()
 
-    cursor.execute('''INSERT INTO Games(name,description, genre,developer,ram_min,cpu_min,
+    cursor.execute('''INSERT INTO Games(name,description,developer,ram_min,cpu_min,
     gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
-
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
 
     return cursor.lastrowid
+
 
 def readall_db():
     cursor = get_cursor()
@@ -54,6 +53,7 @@ def readall_db():
         results.append(tuple(row))
 
     return results
+
 
 def deleteall_db():
     cursor = get_cursor()
