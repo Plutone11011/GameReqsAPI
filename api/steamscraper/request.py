@@ -1,16 +1,26 @@
-import http3
+import http3, json
 from bs4 import BeautifulSoup
 
 
-async def steamstore_request(id):
-    url = 'https://store.steampowered.com/app/' + id
-    game = {}
+async def run_requests():
+     async for game in steamstore_request():
+         print(game)
+
+
+async def steamstore_request():
+
 
     client = http3.AsyncClient()
-    page = await client.get(url)
-    soup = BeautifulSoup(page.text, 'html.parser')
+    steam_api_result = await client.get('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
+    steam_api_result_list = json.loads(steam_api_result.text)['applist']['apps']
+    ids = list(map(lambda obj: obj['appid'], steam_api_result_list))
 
-    _parse_tree(soup, game)
+    for game_id in ids[:100]:
+        game = {}
+        page = await client.get(f'https://store.steampowered.com/app/{game_id}')
+        soup = BeautifulSoup(page.text, 'html.parser')
+        _parse_tree(soup, game)
+        yield game
 
 
 def _parse_tree(soup, game):
@@ -23,20 +33,23 @@ def _parse_tree(soup, game):
 
     right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
     left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
+
     _parse_requirements(right_div_requirements, game)
     _parse_requirements(left_div_requirements, game)
-    print(game)
+    # some games do not have left and right div for recommended
+    # and minimum requirements
+    if 'ram_min' not in game and 'ram_rec' not in game:
+        div_requirements = soup.find('div', class_='game_area_sys_req_full')
+        _parse_requirements(div_requirements, game)
 
 
 def _parse_requirements(div_requirements: str, game):
-    print(type(div_requirements))
+
     if str(div_requirements).find('Minimum') != -1:
-        print('entered minimum')
         requirements = {'Memory': 'ram_min', 'Processor': 'cpu_min', 'Graphics': 'gpu_min', 'OS': 'OS_min',
                         'Storage': 'storage_min'}
         _parse_li(requirements, div_requirements, game)
     elif str(div_requirements).find('Recommended') != -1:
-        print('entered recommended')
         requirements = {'Memory': 'ram_rec', 'Processor': 'cpu_rec', 'Graphics': 'gpu_rec', 'OS': 'OS_rec',
                         'Storage': 'storage_rec'}
         _parse_li(requirements, div_requirements, game)
@@ -46,13 +59,16 @@ def _parse_requirements(div_requirements: str, game):
 
 def _parse_li(requirements: dict, div_requirements: str, game):
     ul = div_requirements.find('ul', class_='bb_ul')
-    reqs_li = ul.find_all('li')
-    req_keys = requirements.keys()
-    for li in reqs_li:
-        for k in req_keys:
-            if li.find(k) != -1:
-                #adds current li child if it's one of the requirements
-                game[requirements[k]] = _parse_soup(li)
+    try:
+        reqs_li = ul.find_all('li')
+        req_keys = requirements.keys()
+        for li in reqs_li:
+            for k in req_keys:
+                if str(li).find(k) != -1:
+                    # adds current li child if it's one of the requirements
+                    game[requirements[k]] = _parse_soup(li)
+    except AttributeError as a:
+        print('No li in unordered list')
 
 
 def _parse_soup(li_item):

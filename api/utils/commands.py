@@ -15,7 +15,7 @@ def init_db_command():
 @click.command('init-scraper')
 @with_appcontext
 def run_spider():
-    asyncio.run(request.steamstore_request('1284410/'))
+    asyncio.run(request.run_requests())
 
 
 def init_app(app):
