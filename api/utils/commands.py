@@ -1,9 +1,8 @@
-import click
+import click, asyncio
 from flask.cli import with_appcontext
 
 from api.db import db
-from api.steamscraper import scraper
-from scrapy.crawler import CrawlerProcess
+from api.steamscraper import request
 
 
 @click.command('init-db')
@@ -16,10 +15,7 @@ def init_db_command():
 @click.command('init-scraper')
 @with_appcontext
 def run_spider():
-    process = CrawlerProcess()
-
-    process.crawl(scraper.SteamSpider)
-    process.start() # the script will block here until the crawling is finished
+    asyncio.run(request.steamstore_request('1284410/'))
 
 
 def init_app(app):
