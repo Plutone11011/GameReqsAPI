@@ -3,19 +3,19 @@ from bs4 import BeautifulSoup
 
 
 async def run_requests():
-     async for game in steamstore_request():
-         print(game)
-
-
-async def steamstore_request():
-
-
     client = http3.AsyncClient()
     steam_api_result = await client.get('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
     steam_api_result_list = json.loads(steam_api_result.text)['applist']['apps']
     ids = list(map(lambda obj: obj['appid'], steam_api_result_list))
 
-    for game_id in ids[:100]:
+    async for game in steamstore_request(0,100,ids):
+        print(game)
+
+
+async def steamstore_request(begin, end, ids):
+    client = http3.AsyncClient()
+
+    for game_id in ids[begin:end+1]:
         game = {}
         page = await client.get(f'https://store.steampowered.com/app/{game_id}')
         soup = BeautifulSoup(page.text, 'html.parser')
