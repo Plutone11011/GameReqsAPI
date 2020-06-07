@@ -76,6 +76,17 @@ def readall_db():
     return results
 
 
+def read_paginated_db(limit: int, last_id: int):
+    cursor = get_cursor()
+    results = []
+
+    cursor.execute('SELECT * FROM Games WHERE id > ? ORDER BY id LIMIT ?', (last_id, limit))
+    for row in cursor.fetchall():
+        results.append(tuple(row))
+
+    return results
+
+
 def deleteall_db():
     cursor = get_cursor()
 
