@@ -20,10 +20,11 @@ async def run_requests():
     task3 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task2+1, end_index_task3+1, ids), 3))
     task4 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task3+1, len_ids, ids), 4))
 
-    await task1
-    await task2
-    await task3
-    await task4
+    await asyncio.gather(task1, task2, task3, task4)
+    #await task1
+    #await task2
+    #await task3
+    #await task4
 
 async def wrap_generator(generator, task_number):
     def check_key(key):
