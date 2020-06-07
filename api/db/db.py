@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, re
 from flask import current_app, g
 
 
@@ -33,13 +33,34 @@ def init_db():
     with current_app.open_resource('db/schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+def _convert_numeric_data(numeric):
+    try:
+        float(numeric)
+    except ValueError:
+        numeric_pattern = re.compile(r'((0(\.\d+)?)|([1-9]\d*(\.\d+)?))')
+        match = re.search(numeric_pattern, numeric)
+        if (match):
+            return int(match[0])
+    except TypeError:
+        return None
 
 def insert_db(game :tuple):
     cursor = get_cursor()
 
+    mutable_game = list(game)
+    ram_min_num = _convert_numeric_data(mutable_game[3])
+    storage_min_num = _convert_numeric_data(mutable_game[7])
+    ram_rec_num = _convert_numeric_data(mutable_game[8])
+    storage_rec_num = _convert_numeric_data(mutable_game[12])
+
+    mutable_game[3] = ram_min_num
+    mutable_game[7] = storage_min_num
+    mutable_game[8] = ram_rec_num
+    mutable_game[12] = storage_rec_num
+
     cursor.execute('''INSERT INTO Games(name,description,developer,ram_min,cpu_min,
     gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', tuple(mutable_game))
 
     return cursor.lastrowid
 

@@ -1,6 +1,8 @@
-import http3, json
+import http3, json, asyncio
 from bs4 import BeautifulSoup
 
+from api.steamscraper.parser import parse_tree
+from api.db import db
 
 async def run_requests():
     client = http3.AsyncClient()
@@ -8,73 +10,41 @@ async def run_requests():
     steam_api_result_list = json.loads(steam_api_result.text)['applist']['apps']
     ids = list(map(lambda obj: obj['appid'], steam_api_result_list))
 
-    async for game in steamstore_request(0,100,ids):
-        print(game)
+    len_ids = len(ids)
+    end_index_task2 = len_ids // 2
+    end_index_task1 = end_index_task2 // 2
+    end_index_task3 = end_index_task2 + end_index_task1
+
+    task1 = asyncio.create_task(wrap_generator(steamstore_request(0,end_index_task1+1,ids), 1))
+    task2 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task1+1,end_index_task2+1,ids), 2))
+    task3 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task2+1, end_index_task3+1, ids), 3))
+    task4 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task3+1, len_ids, ids), 4))
+
+    await task1
+    await task2
+    await task3
+    await task4
+
+async def wrap_generator(generator, task_number):
+    def check_key(key):
+        return game[key] if key in game else None
+
+    async for game in generator:
+        print(f'Task{task_number}')
+        if ('name' in game and game['name']):
+            db.insert_db((check_key('name'), check_key('description'), check_key('developer'), check_key('ram_min'),
+                    check_key('cpu_min'), check_key('gpu_min'), check_key('OS_min'), check_key('storage_min'), 
+                    check_key('ram_rec'), check_key('cpu_rec'), check_key('gpu_rec'), check_key('OS_rec'), 
+                    check_key('storage_rec')))
+        
 
 
 async def steamstore_request(begin, end, ids):
     client = http3.AsyncClient()
 
-    for game_id in ids[begin:end+1]:
+    for game_id in ids[begin:end]:
         game = {}
         page = await client.get(f'https://store.steampowered.com/app/{game_id}')
         soup = BeautifulSoup(page.text, 'html.parser')
-        _parse_tree(soup, game)
+        parse_tree(soup, game)
         yield game
-
-
-def _parse_tree(soup, game):
-    try:
-        game['name'] = soup.find(class_='apphub_AppName').string
-        game['description'] = soup.find(class_='game_description_snippet').string.strip('\r\t\n')
-        game['developer'] = soup.find('div', attrs={'id': 'developers_list'}).a.string
-    except AttributeError as a:
-        print('Couldn\'t parse correctly')
-
-    right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
-    left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
-
-    _parse_requirements(right_div_requirements, game)
-    _parse_requirements(left_div_requirements, game)
-    # some games do not have left and right div for recommended
-    # and minimum requirements
-    if 'ram_min' not in game and 'ram_rec' not in game:
-        div_requirements = soup.find('div', class_='game_area_sys_req_full')
-        _parse_requirements(div_requirements, game)
-
-
-def _parse_requirements(div_requirements: str, game):
-
-    if str(div_requirements).find('Minimum') != -1:
-        requirements = {'Memory': 'ram_min', 'Processor': 'cpu_min', 'Graphics': 'gpu_min', 'OS': 'OS_min',
-                        'Storage': 'storage_min'}
-        _parse_li(requirements, div_requirements, game)
-    elif str(div_requirements).find('Recommended') != -1:
-        requirements = {'Memory': 'ram_rec', 'Processor': 'cpu_rec', 'Graphics': 'gpu_rec', 'OS': 'OS_rec',
-                        'Storage': 'storage_rec'}
-        _parse_li(requirements, div_requirements, game)
-    else:
-        print('No mininum or recommended?')
-
-
-def _parse_li(requirements: dict, div_requirements: str, game):
-    ul = div_requirements.find('ul', class_='bb_ul')
-    try:
-        reqs_li = ul.find_all('li')
-        req_keys = requirements.keys()
-        for li in reqs_li:
-            for k in req_keys:
-                if str(li).find(k) != -1:
-                    # adds current li child if it's one of the requirements
-                    game[requirements[k]] = _parse_soup(li)
-    except AttributeError as a:
-        print('No li in unordered list')
-
-
-def _parse_soup(li_item):
-    try:
-        li_item.strong.extract()
-        li_item.br.extract()
-    except AttributeError:
-        print('There was no br or strong tag')
-    return li_item.string
