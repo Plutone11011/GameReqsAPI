@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from api.steamscraper.parser import parse_tree
 from api.db import db
 
+
 async def run_requests():
     client = http3.AsyncClient()
     steam_api_result = await client.get('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
@@ -21,10 +22,7 @@ async def run_requests():
     task4 = asyncio.create_task(wrap_generator(steamstore_request(end_index_task3+1, len_ids, ids), 4))
 
     await asyncio.gather(task1, task2, task3, task4)
-    #await task1
-    #await task2
-    #await task3
-    #await task4
+
 
 async def wrap_generator(generator, task_number):
     def check_key(key):
@@ -32,13 +30,12 @@ async def wrap_generator(generator, task_number):
 
     async for game in generator:
         print(f'Task{task_number}')
-        if ('name' in game and game['name']):
+        if 'name' in game and game['name']:
             db.insert_db((check_key('name'), check_key('description'), check_key('developer'), check_key('ram_min'),
-                    check_key('cpu_min'), check_key('gpu_min'), check_key('OS_min'), check_key('storage_min'), 
-                    check_key('ram_rec'), check_key('cpu_rec'), check_key('gpu_rec'), check_key('OS_rec'), 
-                    check_key('storage_rec')))
+                          check_key('cpu_min'), check_key('gpu_min'), check_key('OS_min'), check_key('storage_min'),
+                          check_key('ram_rec'), check_key('cpu_rec'), check_key('gpu_rec'), check_key('OS_rec'),
+                          check_key('storage_rec')))
         
-
 
 async def steamstore_request(begin, end, ids):
     client = http3.AsyncClient()
