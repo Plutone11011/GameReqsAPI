@@ -1,7 +1,9 @@
-import sqlite3, re
+import sqlite3
 from flask import current_app, g
 
 from api.utils.GameEnum import GameEnum
+from api.utils.utils import convert_numeric_string
+
 
 def get_db():
     if 'db' not in g:
@@ -35,26 +37,14 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 
 
-def _convert_numeric_data(numeric):
-    try:
-        float(numeric)
-    except ValueError:
-        numeric_pattern = re.compile(r'((0(\.\d+)?)|([1-9]\d*(\.\d+)?))')
-        match = re.search(numeric_pattern, numeric)
-        if match:
-            return int(match[0])
-    except TypeError:
-        return None
-
-
 def insert_db(game :tuple):
     cursor = get_cursor()
 
     mutable_game = list(game)
-    ram_min_num = _convert_numeric_data(mutable_game[GameEnum.RAM_MIN])
-    storage_min_num = _convert_numeric_data(mutable_game[GameEnum.STORAGE_MIN])
-    ram_rec_num = _convert_numeric_data(mutable_game[GameEnum.RAM_REC])
-    storage_rec_num = _convert_numeric_data(mutable_game[GameEnum.STORAGE_REC])
+    ram_min_num = convert_numeric_string(mutable_game[GameEnum.RAM_MIN])
+    storage_min_num = convert_numeric_string(mutable_game[GameEnum.STORAGE_MIN])
+    ram_rec_num = convert_numeric_string(mutable_game[GameEnum.RAM_REC])
+    storage_rec_num = convert_numeric_string(mutable_game[GameEnum.STORAGE_REC])
 
     mutable_game[GameEnum.RAM_MIN] = ram_min_num
     mutable_game[GameEnum.STORAGE_MIN] = storage_min_num

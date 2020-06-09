@@ -1,10 +1,11 @@
-from flask import jsonify, request
+import json
+from flask import jsonify, request, Response
 
 from api.db import db
 from api.utils.GameEnum import GameEnum
 
 
-def _process_get_response(response, games):
+def _process_response(response: list, games: tuple, pagination: bool):
     for game in games:
         id_game = list(game).pop(0)
 
@@ -32,24 +33,73 @@ def _process_get_response(response, games):
                 'storage_rec': storage_rec
             }
         })
-    return response, id_game
+        if pagination:
+            response[-1]['last_id'] = id_game
+    return jsonify(response)
+
+
+def validate_pagination(request):
+    problem = {
+        'type': 'https://tools.ietf.org/html/rfc7807#section-3',
+        'title': 'Your request parameters weren\'t valid.',
+        'invalid-params': []
+    }
+
+    try:
+        page_parameters = json.loads(request.args['page'])
+    except json.decoder.JSONDecodeError as json_error:
+        problem['invalid-params'].append({
+            'name': 'page',
+            'reason': json_error.msg
+        })
+        return Response(json.dumps(problem), status=400, mimetype='application/problem+json')
+
+    if not page_parameters.get('limit') and page_parameters.get('limit') != 0:
+        problem['invalid-params'].append({
+            'name': 'limit',
+            'reason': 'Maximum number of results must be provided with pagination'
+        })
+    elif page_parameters.get('limit') < 0:
+        problem['invalid-params'].append({
+            'name': 'limit',
+            'reason': 'Maximum number of results can\'t be negative'
+        })
+
+    if not page_parameters.get('last_id') and page_parameters.get('last_id') != 0:
+        problem['invalid-params'].append({
+            'name': 'last_id',
+            'reason': 'Last inserted id must be provided with pagination'
+        })
+    elif page_parameters.get('last_id') < 0:
+        problem['invalid-params'].append({
+            'name': 'last_id',
+            'reason': 'Last inserted id can\'t be negative'
+        })
+    if len(problem['invalid-params']):
+        return Response(json.dumps(problem), status=400, mimetype='application/problem+json')
+    else:
+        return None
 
 
 def get_every_game():
+    if request.args.get('page'):
+        page_parameters = {}
+        error = validate_pagination(request)
 
+        if error:
+            return error
+
+        return get_paginated_games(json.loads(request.args['page']))
     response = []
     games = db.readall_db()
 
-    return jsonify(_process_get_response(response, games)[0])
+    return _process_response(response, games, False)
 
 
-def get_paginated_games():
+def get_paginated_games(page_parameters: dict):
     response = []
 
     # last id is the id returned by this endpoint, the starting id for the next page
-    print(request.args)
-    games = db.read_paginated_db(request.args['limit'], request.args['last_id'])
+    games = db.read_paginated_db(page_parameters['limit'], page_parameters['last_id'])
 
-    response, id_game = _process_get_response(response, games)
-    response[-1].setdefault('last_id', id_game)
-    return jsonify(response)
+    return _process_response(response, games, True)

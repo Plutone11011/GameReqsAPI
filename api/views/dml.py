@@ -9,10 +9,10 @@ def validate(request):
     #response in application/problem+json format
     problem = {
         'type': 'https://tools.ietf.org/html/rfc7807#section-3',
-        'title': 'Your request parameters didn\'t validate.',
+        'title': 'Your request parameters weren\'t valid.',
         'invalid-params': []
     }
-    if not request['name']:
+    if not request.get['name']:
         problem['invalid-params'].append({
             'name': 'name',
             'reason': 'Game name must be provided'
@@ -46,16 +46,15 @@ def validate(request):
     #     })
 
     if len(problem['invalid-params']):
-        print('There are errors')
         return Response(dumps(problem), status=400, mimetype='application/problem+json')
     else:
         return None    
 
 
 def insert_game():
-    has_error = validate(request.json)
-    if has_error:
-        return has_error
+    error = validate(request.json)
+    if error:
+        return error
 
     game = (request.json['name'], request.json['description'],
             request.json['developer'], request.json['ram_min'],
