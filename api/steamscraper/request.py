@@ -25,16 +25,14 @@ async def run_requests():
 
 
 async def wrap_generator(generator, task_number):
-    def check_key(key):
-        return game[key] if key in game else None
 
     async for game in generator:
         print(f'Task{task_number}')
         if 'name' in game and game['name']:
-            db.insert_db((check_key('name'), check_key('description'), check_key('developer'), check_key('ram_min'),
-                          check_key('cpu_min'), check_key('gpu_min'), check_key('OS_min'), check_key('storage_min'),
-                          check_key('ram_rec'), check_key('cpu_rec'), check_key('gpu_rec'), check_key('OS_rec'),
-                          check_key('storage_rec')))
+            db.insert((game.get('name'), game.get('description'), game.get('developer'), game.get('ram_min'),
+                       game.get('cpu_min'), game.get('gpu_min'), game.get('OS_min'), game.get('storage_min'),
+                       game.get('ram_rec'), game.get('cpu_rec'), game.get('gpu_rec'), game.get('OS_rec'),
+                       game.get('storage_rec')))
         
 
 async def steamstore_request(begin, end, ids):

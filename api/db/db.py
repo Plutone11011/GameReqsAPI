@@ -2,10 +2,10 @@ import sqlite3
 from flask import current_app, g
 
 from api.utils.GameEnum import GameEnum
-from api.utils.utils import convert_numeric_string
+from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER
 
 
-def get_db():
+def get():
     if 'db' not in g:
         try:
             g.db = sqlite3.connect(current_app.config['DATABASE'], detect_types=sqlite3.PARSE_DECLTYPES)
@@ -17,7 +17,7 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
+def close(e=None):
     db = g.pop('db', None)
 
     if db is not None:
@@ -26,18 +26,18 @@ def close_db(e=None):
 
 
 def get_cursor():
-    db = get_db()
+    db = get()
     return db.cursor()
     
 
-def init_db():
-    db = get_db()
+def init():
+    db = get()
 
     with current_app.open_resource('db/schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
 
-def insert_db(game :tuple):
+def insert(game :tuple):
     cursor = get_cursor()
 
     mutable_game = list(game)
@@ -58,7 +58,7 @@ def insert_db(game :tuple):
     return cursor.lastrowid
 
 
-def readall_db():
+def readall():
     cursor = get_cursor()
     results = []
 
@@ -69,7 +69,7 @@ def readall_db():
     return results
 
 
-def read_paginated_db(limit: int, last_id: int):
+def read_paginated(limit: int, last_id: int):
     cursor = get_cursor()
     results = []
 
@@ -80,7 +80,30 @@ def read_paginated_db(limit: int, last_id: int):
     return results
 
 
-def deleteall_db():
+# def read_filtered_by_memory(value: int, op: str, memory: str):
+def read_filtered_by_memory(filter_parameters):
+    # assume here op is already a sql operator
+    # handles both storage and ram in memory string
+    cursor = get_cursor()
+    results = []
+
+    query_string = 'SELECT * FROM Games WHERE '
+    for i, filter_params in enumerate(filter_parameters):
+
+        if i != len(filter_parameters) - 1:
+            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} {str(filter_params.get("value"))} AND '
+        else:
+            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} {str(filter_params.get("value"))}'
+
+    cursor.execute(query_string)
+
+    for row in cursor.fetchall():
+        results.append(tuple(row))
+
+    return results
+
+
+def deleteall():
     cursor = get_cursor()
 
     cursor.execute('DELETE FROM Games')

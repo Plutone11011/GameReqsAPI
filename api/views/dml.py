@@ -4,7 +4,7 @@ from flask import current_app, request, Response
 from api.db import db
 
 
-def validate(request):
+def validate(req):
 
     #response in application/problem+json format
     problem = {
@@ -12,7 +12,7 @@ def validate(request):
         'title': 'Your request parameters weren\'t valid.',
         'invalid-params': []
     }
-    if not request.get['name']:
+    if not req.get('name'):
         problem['invalid-params'].append({
             'name': 'name',
             'reason': 'Game name must be provided'
@@ -63,12 +63,12 @@ def insert_game():
             request.json['ram_rec'], request.json['cpu_rec'], request.json['gpu_rec'],
             request.json['OS_rec'], request.json['storage_rec'])
     
-    id = db.insert_db(game)
+    id = db.insert(game)
     return Response(dumps({'insertedGameId': id}), status=201, mimetype='application/json')
 
 
 def delete_game():
 
-    rowcount = db.deleteall_db()
+    rowcount = db.deleteall()
 
     return '', 204

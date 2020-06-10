@@ -40,6 +40,6 @@ def register_endpoints(app):
     app.add_url_rule('/api/v1/games', 'insert_game', dml.insert_game,
                      provide_automatic_options=None, methods=['POST'])
     app.add_url_rule('/api/v1/games', 'get_every_game',
-                     query.get_every_game,provide_automatic_options=None, methods=['GET'])
+                     query.get_game,provide_automatic_options=None, methods=['GET'])
     app.add_url_rule('/api/v1/games', 'delete_game',
                      dml.delete_game, provide_automatic_options=None, methods=['DELETE'])

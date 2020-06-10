@@ -8,7 +8,7 @@ from api.steamscraper import request
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
-    db.init_db()
+    db.init()
     click.echo('Initialized the database.')
 
 
@@ -19,6 +19,6 @@ def run_spider():
 
 
 def init_app(app):
-    app.teardown_appcontext(db.close_db) #commit changes and close db connection after each request
+    app.teardown_appcontext(db.close) #commit changes and close db connection after each request
     app.cli.add_command(init_db_command)
     app.cli.add_command(run_spider)
