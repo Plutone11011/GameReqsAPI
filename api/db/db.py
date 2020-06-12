@@ -80,22 +80,24 @@ def read_paginated(limit: int, last_id: int):
     return results
 
 
-# def read_filtered_by_memory(value: int, op: str, memory: str):
 def read_filtered_by_memory(filter_parameters):
-    # assume here op is already a sql operator
     # handles both storage and ram in memory string
     cursor = get_cursor()
     results = []
+    params = []
 
     query_string = 'SELECT * FROM Games WHERE '
     for i, filter_params in enumerate(filter_parameters):
 
         if i != len(filter_parameters) - 1:
-            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} {str(filter_params.get("value"))} AND '
+            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ? AND '
         else:
-            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} {str(filter_params.get("value"))}'
+            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ?'
+        print(query_string)
+        params.append(str(filter_params.get("value")))
 
-    cursor.execute(query_string)
+    print()
+    cursor.execute(query_string, tuple(params))
 
     for row in cursor.fetchall():
         results.append(tuple(row))

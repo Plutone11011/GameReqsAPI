@@ -17,33 +17,6 @@ def validate(req):
             'name': 'name',
             'reason': 'Game name must be provided'
         })
-    
-    # if not request['ram_min']:
-    #     problem['invalid-params'].append({
-    #         'name': 'ram_min',
-    #         'reason': 'Minimum requirements (ram) must be provided'
-    #     })
-    #
-    # if not request['cpu_min']:
-    #     problem['invalid-params'].append({
-    #         'name': 'cpu_min',
-    #         'reason': 'Minimum requirements (cpu) must be provided'
-    #     })
-    # if not request['gpu_min']:
-    #     problem['invalid-params'].append({
-    #         'name': 'gpu_min',
-    #         'reason': 'Minimum requirements (gpu) must be provided'
-    #     })
-    # if not request['storage_min']:
-    #     problem['invalid-params'].append({
-    #         'name': 'storage_min',
-    #         'reason': 'Minimum requirements (storage) must be provided'
-    #     })
-    # if not request['OS_min']:
-    #     problem['invalid-params'].append({
-    #         'name': 'OS_min',
-    #         'reason': 'Minimum requirements (OS) must be provided'
-    #     })
 
     if len(problem['invalid-params']):
         return Response(dumps(problem), status=400, mimetype='application/problem+json')

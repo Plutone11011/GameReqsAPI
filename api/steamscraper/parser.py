@@ -6,7 +6,7 @@ def parse_tree(soup, game):
         game['description'] = soup.find(class_='game_description_snippet').string.strip('\r\t\n')
         game['developer'] = soup.find('div', attrs={'id': 'developers_list'}).a.string
     except AttributeError:
-        print('Couldn\'t parse correctly')
+        print('Couldn\'t parse name, description or developer')
 
     right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
     left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
