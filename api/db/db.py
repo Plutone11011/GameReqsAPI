@@ -69,41 +69,52 @@ def readall():
     return results
 
 
-def read_paginated(limit: int, last_id: int):
-    cursor = get_cursor()
-    results = []
 
-    cursor.execute('SELECT * FROM Games WHERE id > ? ORDER BY id LIMIT ?', (last_id, limit))
-    for row in cursor.fetchall():
-        results.append(tuple(row))
-
-    return results
-
-
-def read_filtered_by_memory(filter_parameters):
-    # handles both storage and ram in memory string
-    cursor = get_cursor()
-    results = []
+def query_where_clause_filter(filter_parameters):
+    """ returns where clause of filtered query,
+    handling both storage and ram in memory string """
     params = []
 
-    query_string = 'SELECT * FROM Games WHERE '
+    query_string = 'WHERE '
     for i, filter_params in enumerate(filter_parameters):
 
         if i != len(filter_parameters) - 1:
             query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ? AND '
         else:
             query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ?'
-        print(query_string)
         params.append(str(filter_params.get("value")))
 
-    print()
-    cursor.execute(query_string, tuple(params))
+    return query_string, tuple(params)
 
+
+def execute_query(**kwargs):
+    """ executes query with keyword parameters
+        given by url query"""
+    cursor = get_cursor()
+    results = []
+
+    query_string = 'SELECT * FROM Games '
+    params_values = []
+    if not kwargs:
+        cursor.execute(query_string)
+    else:
+        if kwargs.get('filter_parameters'):
+            query_s, params = query_where_clause_filter(kwargs.get('filter_parameters'))
+            query_string += query_s
+            for param in params:
+                params_values.append(param)        
+        if (kwargs.get('last_id') or kwargs.get('last_id') == 0) and (kwargs.get('limit') or kwargs.get('limit') == 0):
+            query_string += ' AND id > ? ORDER BY id LIMIT ?'
+            params_values.append(kwargs.get('last_id'))
+            params_values.append(kwargs.get('limit'))
+        #maybe other filters?
+        cursor.execute(query_string, tuple(params_values))
+
+    
     for row in cursor.fetchall():
         results.append(tuple(row))
 
     return results
-
 
 def deleteall():
     cursor = get_cursor()

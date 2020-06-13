@@ -42,32 +42,39 @@ def _process_response(response: list, games: tuple, pagination=False):
 
 def get_game():
     response = []
+    limit = None
+    last_id = None
+    filters = None
+
     if request.args.get('page'):
         error = validate_pagination(request)
 
         if error:
             return error
-
-        return get_paginated_games(json.loads(request.args['page']))
+        
+        page = json.loads(request.args['page'])
+        limit = page['limit']
+        last_id = page['last_id']
 
     if request.args.get('filters'):
-        print(request.args.get('filters'))
         error = validate_filters(request)
         if error:
             return error
-        return get_filtered_memory_games(json.loads(request.args.get('filters')))
+        
+        filters = json.loads(request.args['filters'])
 
-    response = []
-    games = db.readall()
+    games = db.execute_query(limit=limit,
+                            last_id=last_id,
+                            filter_parameters=filters)
 
     return _process_response(response, games)
 
 
-def get_paginated_games(page_parameters: dict):
+""" def get_paginated_games(page_parameters: dict):
     response = []
 
     # last id is the id returned by this endpoint, the starting id for the next page
-    games = db.read_paginated(page_parameters['limit'], page_parameters['last_id'])
+    games = db.execute_query(limit=page_parameters['limit'],last_id=page_parameters['last_id'])
 
     return _process_response(response, games, True)
 
@@ -75,6 +82,6 @@ def get_paginated_games(page_parameters: dict):
 def get_filtered_memory_games(filter_parameters):
     response = []
 
-    games = db.read_filtered_by_memory(filter_parameters)
+    games = db.execute_query(filter_parameters=filter_parameters)
 
-    return _process_response(response, games)
+    return _process_response(response, games) """
