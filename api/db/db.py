@@ -1,8 +1,7 @@
 import sqlite3
 from flask import current_app, g
 
-from api.utils.GameEnum import GameEnum
-from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER
+from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER, GameEnum
 
 
 def get():
@@ -87,13 +86,20 @@ def query_where_clause_filter(filter_parameters):
     return query_string, tuple(params)
 
 
-def execute_query(**kwargs):
+def execute_query(*args, **kwargs):
     """ executes query with keyword parameters
-        given by url query"""
+        given by url query and picks only columns defined in args"""
     cursor = get_cursor()
     results = []
 
-    query_string = 'SELECT * FROM Games '
+    if not args:
+        query_string = 'SELECT * FROM Games '
+    else:
+        if len(args) == 3:
+            query_string = f'SELECT id, {args[0]}, {args[1]}, {args[2]} FROM Games '
+        elif len(args) == 5:
+            query_string = f'SELECT id, {args[0]}, {args[1]}, {args[2]}, {args[3]}, {args[4]} FROM Games '
+
     params_values = []
     if not kwargs:
         cursor.execute(query_string)
@@ -104,7 +110,10 @@ def execute_query(**kwargs):
             for param in params:
                 params_values.append(param)        
         if (kwargs.get('last_id') or kwargs.get('last_id') == 0) and (kwargs.get('limit') or kwargs.get('limit') == 0):
-            query_string += ' AND id > ? ORDER BY id LIMIT ?'
+            if not kwargs.get('filter_parameters'):
+                query_string += 'WHERE id > ? ORDER BY id LIMIT ?'
+            else:
+                query_string += ' AND id > ? ORDER BY id LIMIT ?'
             params_values.append(kwargs.get('last_id'))
             params_values.append(kwargs.get('limit'))
         #maybe other filters?
@@ -113,7 +122,6 @@ def execute_query(**kwargs):
     
     for row in cursor.fetchall():
         results.append(tuple(row))
-
     return results
 
 def deleteall():
