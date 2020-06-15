@@ -41,7 +41,6 @@ def _process_response(resource_attributes: str, games: tuple, pagination=False):
             ram_rec, cpu_rec, gpu_rec, OS_rec, storage_rec = game[GameEnum.RAM_REC: GameEnum.STORAGE_REC+1]
         else:
             ram_rec, cpu_rec, gpu_rec, OS_rec, storage_rec = game[: GameEnum.STORAGE_REC+1 - GameEnum.RAM_REC]
-        
 
         response_obj['recommended_requirements'] = {
             SUBSECTIONS_GAME['recommended_requirements'][GameEnum.RAM_REC - 8]: ram_rec,
@@ -102,14 +101,12 @@ def get_game(resource=None):
 
     if resource:
         games = db.execute_query(*SUBSECTIONS_GAME[resource],
-                            limit=limit,
-                            last_id=last_id,
-                            filter_parameters=filters)
+                                 limit=limit,
+                                 last_id=last_id,
+                                 filter_parameters=filters)
     else:
         games = db.execute_query(limit=limit,
-                            last_id=last_id,
-                            filter_parameters=filters)
-
-    
+                                 last_id=last_id,
+                                 filter_parameters=filters)
 
     return _process_response(resource, games)

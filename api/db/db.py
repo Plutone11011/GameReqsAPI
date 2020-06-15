@@ -116,10 +116,9 @@ def execute_query(*args, **kwargs):
                 query_string += ' AND id > ? ORDER BY id LIMIT ?'
             params_values.append(kwargs.get('last_id'))
             params_values.append(kwargs.get('limit'))
-        #maybe other filters?
+        # maybe other filters?
         cursor.execute(query_string, tuple(params_values))
 
-    
     for row in cursor.fetchall():
         results.append(tuple(row))
     return results
