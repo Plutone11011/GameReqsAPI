@@ -4,6 +4,24 @@ from flask import Response
 from api.utils.utils import SQL_OPERATOR_URI_MAPPER
 
 
+def validate_insert(messages: dict):
+    problem = {
+        'type': 'https://tools.ietf.org/html/rfc7807#section-3',
+        'title': 'Your request parameters weren\'t valid.',
+        'invalid-params': []
+    }
+
+    for name, reason in messages.items():
+        problem['invalid-params'].append({
+            'name': name,
+            'reason': reason
+        })
+
+    if len(problem['invalid-params']):
+        return Response(json.dumps(problem), status=400, mimetype='application/problem+json')
+    else:
+        return None
+
 def validate_pagination(request):
     problem = {
         'type': 'https://tools.ietf.org/html/rfc7807#section-3',

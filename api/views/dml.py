@@ -4,6 +4,7 @@ from marshmallow import ValidationError
 
 from api.db import db
 from api.db.model import GameSchema, Game
+from . import validate
 
 
 def insert_game():
@@ -13,8 +14,7 @@ def insert_game():
         id = db.insert(game_schema.dump(game))
         return Response(dumps({'insertedGameId': id}), status=201, mimetype='application/json')
     except ValidationError as err:
-        print(err.messages)
-        print(err.valid_data)
+        return validate.validate_insert(err.messages)
 
 
 def delete_game():
