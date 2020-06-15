@@ -29,10 +29,7 @@ async def wrap_generator(generator, task_number):
     async for game in generator:
         print(f'Task{task_number}')
         if 'name' in game and game['name']:
-            db.insert((game.get('name'), game.get('description'), game.get('developer'), game.get('ram_min'),
-                       game.get('cpu_min'), game.get('gpu_min'), game.get('OS_min'), game.get('storage_min'),
-                       game.get('ram_rec'), game.get('cpu_rec'), game.get('gpu_rec'), game.get('OS_rec'),
-                       game.get('storage_rec')))
+            db.insert(game)
         
 
 async def steamstore_request(begin, end, ids):

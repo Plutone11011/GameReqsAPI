@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+
 
 def parse_tree(soup, game):
     try:

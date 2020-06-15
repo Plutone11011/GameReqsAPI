@@ -17,6 +17,7 @@ SUBSECTIONS_GAME = {
     'recommended_requirements':['ram_rec','cpu_rec','gpu_rec','OS_rec','storage_rec']
 }
 
+
 def convert_numeric_string(numeric: str):
     try:
         num = float(numeric)
@@ -31,6 +32,7 @@ def convert_numeric_string(numeric: str):
                 return float(match[0])
     except TypeError:
         return None
+
 
 class GameEnum(IntEnum):
     NAME = 0,

@@ -36,23 +36,17 @@ def init():
         db.executescript(f.read().decode('utf8'))
 
 
-def insert(game :tuple):
+def insert(game_dict :dict):
     cursor = get_cursor()
 
-    mutable_game = list(game)
-    ram_min_num = convert_numeric_string(mutable_game[GameEnum.RAM_MIN])
-    storage_min_num = convert_numeric_string(mutable_game[GameEnum.STORAGE_MIN])
-    ram_rec_num = convert_numeric_string(mutable_game[GameEnum.RAM_REC])
-    storage_rec_num = convert_numeric_string(mutable_game[GameEnum.STORAGE_REC])
-
-    mutable_game[GameEnum.RAM_MIN] = ram_min_num
-    mutable_game[GameEnum.STORAGE_MIN] = storage_min_num
-    mutable_game[GameEnum.RAM_REC] = ram_rec_num
-    mutable_game[GameEnum.STORAGE_REC] = storage_rec_num
+    game = (game_dict.get('name'), game_dict.get('description'), game_dict.get('developer'), game_dict.get('ram_min'),
+            game_dict.get('cpu_min'), game_dict.get('gpu_min'), game_dict.get('OS_min'), game_dict.get('storage_min'),
+            game_dict.get('ram_rec'), game_dict.get('cpu_rec'), game_dict.get('gpu_rec'), game_dict.get('OS_rec'),
+            game_dict.get('storage_rec'))
 
     cursor.execute('''INSERT INTO Games(name,description,developer,ram_min,cpu_min,
     gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', tuple(mutable_game))
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
 
     return cursor.lastrowid
 
@@ -66,7 +60,6 @@ def readall():
         results.append(tuple(row))
 
     return results
-
 
 
 def query_where_clause_filter(filter_parameters):
@@ -122,6 +115,7 @@ def execute_query(*args, **kwargs):
     for row in cursor.fetchall():
         results.append(tuple(row))
     return results
+
 
 def deleteall():
     cursor = get_cursor()
