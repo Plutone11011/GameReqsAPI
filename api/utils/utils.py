@@ -10,7 +10,7 @@ SQL_OPERATOR_URI_MAPPER = {
     'le': '<=',
 }
 
-#grouping of names of tables's column
+# grouping of names of tables's column
 SUBSECTIONS_GAME = {
     'info':['name','description','developer'],
     'minimum_requirements':['ram_min','cpu_min','gpu_min','OS_min','storage_min'],

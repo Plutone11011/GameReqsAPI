@@ -1,9 +1,9 @@
 import http3, json, asyncio
 from bs4 import BeautifulSoup
+from marshmallow import ValidationError
 
 from api.steamscraper.parser import parse_tree
-from api.db import db
-
+from api.db import db, model
 
 async def run_requests():
     client = http3.AsyncClient()
@@ -29,8 +29,15 @@ async def wrap_generator(generator, task_number):
     async for game in generator:
         print(f'Task{task_number}')
         if 'name' in game and game['name']:
-            db.insert(game)
-        
+            try:
+                game_schema = model.GameSchema()
+                game_obj = game_schema.load(game)
+                db.insert(game_obj)
+            except ValidationError as err:
+                print(err.messages)
+                print(err.valid_data)
+
+
 
 async def steamstore_request(begin, end, ids):
     client = http3.AsyncClient()

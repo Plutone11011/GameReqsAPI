@@ -2,7 +2,7 @@ import sqlite3
 from flask import current_app, g
 
 from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER, GameEnum
-
+from api.db.model import Game
 
 def get():
     if 'db' not in g:
@@ -36,30 +36,19 @@ def init():
         db.executescript(f.read().decode('utf8'))
 
 
-def insert(game_dict :dict):
+def insert(game: Game):
     cursor = get_cursor()
 
-    game = (game_dict.get('name'), game_dict.get('description'), game_dict.get('developer'), game_dict.get('ram_min'),
-            game_dict.get('cpu_min'), game_dict.get('gpu_min'), game_dict.get('OS_min'), game_dict.get('storage_min'),
-            game_dict.get('ram_rec'), game_dict.get('cpu_rec'), game_dict.get('gpu_rec'), game_dict.get('OS_rec'),
-            game_dict.get('storage_rec'))
+    game = (game.name, game.description, game.developer, game.ram_min,
+            game.cpu_min, game.gpu_min, game.OS_min, game.storage_min,
+            game.ram_rec, game.cpu_rec, game.gpu_rec, game.OS_rec,
+            game.storage_rec)
 
     cursor.execute('''INSERT INTO Games(name,description,developer,ram_min,cpu_min,
     gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
     VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
 
     return cursor.lastrowid
-
-
-def readall():
-    cursor = get_cursor()
-    results = []
-
-    cursor.execute('SELECT * FROM Games')
-    for row in cursor.fetchall():
-        results.append(tuple(row))
-
-    return results
 
 
 def query_where_clause_filter(filter_parameters):
@@ -92,6 +81,8 @@ def execute_query(*args, **kwargs):
             query_string = f'SELECT id, {args[0]}, {args[1]}, {args[2]} FROM Games '
         elif len(args) == 5:
             query_string = f'SELECT id, {args[0]}, {args[1]}, {args[2]}, {args[3]}, {args[4]} FROM Games '
+        else:
+            query_string = 'SELECT * FROM Games '
 
     params_values = []
     if not kwargs:
@@ -113,7 +104,7 @@ def execute_query(*args, **kwargs):
         cursor.execute(query_string, tuple(params_values))
 
     for row in cursor.fetchall():
-        results.append(tuple(row))
+        results.append(dict(row))
     return results
 
 

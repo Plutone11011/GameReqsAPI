@@ -22,6 +22,7 @@ def validate_insert(messages: dict):
     else:
         return None
 
+
 def validate_pagination(request):
     problem = {
         'type': 'https://tools.ietf.org/html/rfc7807#section-3',

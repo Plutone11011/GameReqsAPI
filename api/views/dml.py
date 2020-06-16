@@ -11,7 +11,7 @@ def insert_game():
     game_schema = GameSchema()
     try:
         game = game_schema.load(request.json)
-        id = db.insert(game_schema.dump(game))
+        id = db.insert(game)
         return Response(dumps({'insertedGameId': id}), status=201, mimetype='application/json')
     except ValidationError as err:
         return validate.validate_insert(err.messages)

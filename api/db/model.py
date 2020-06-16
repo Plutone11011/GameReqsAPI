@@ -41,10 +41,10 @@ class GameSchema(Schema):
 
     @pre_load
     def convert_numerics(self, data, **kwargs):
-        ram_min_num = convert_numeric_string(data['ram_min'])
-        storage_min_num = convert_numeric_string(data['storage_min'])
-        ram_rec_num = convert_numeric_string(data['ram_rec'])
-        storage_rec_num = convert_numeric_string(data['storage_rec'])
+        ram_min_num = convert_numeric_string(data.get('ram_min'))
+        storage_min_num = convert_numeric_string(data.get('storage_min'))
+        ram_rec_num = convert_numeric_string(data.get('ram_rec'))
+        storage_rec_num = convert_numeric_string(data.get('storage_rec'))
 
         data['ram_min'] = ram_min_num
         data['ram_rec'] = ram_rec_num
