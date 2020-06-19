@@ -3,8 +3,8 @@ from flask import current_app, request, Response
 from marshmallow import ValidationError
 
 from api.db import db
-from api.db.model import GameSchema, Game
-from . import validate
+from api.db.model import GameSchema, Game, UpdateGameSchema
+from api.views.validate import validate
 
 
 def insert_game():
@@ -14,13 +14,32 @@ def insert_game():
         id = db.insert(game)
         return Response(json.dumps({'insertedGameId': id}), status=201, mimetype='application/json')
     except json.JSONDecodeError as err:
-        return validate.validate({'insert_body': err.msg})
+        return validate({'insert_body': err.msg})
     except ValidationError as err:
-        return validate.validate(err.messages)
+        return validate(err.messages)
+
+
+def update_game():
+    game_schema = UpdateGameSchema()
+    try:
+        game = game_schema.load(request.json)
+        rowcount = db.update(game)
+        if rowcount:
+            return '', 200
+        else:
+            return '', 404
+    except json.JSONDecodeError as err:
+        return validate({'update_body': err.msg})
+    except ValidationError as err:
+        return validate(err.messages)
 
 
 def delete_game():
 
-    rowcount = db.deleteall()
+    rowcount = db.delete()
 
-    return '', 204
+    if rowcount:
+        return '', 204
+    else:
+        return '', 404
+

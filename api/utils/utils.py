@@ -32,19 +32,3 @@ def convert_numeric_string(numeric: str):
                 return float(match[0])
     except TypeError:
         return None
-
-
-class GameEnum(IntEnum):
-    NAME = 0,
-    DESCRIPTION = 1,
-    DEVELOPER = 2,
-    RAM_MIN = 3,
-    CPU_MIN = 4,
-    GPU_MIN = 5,
-    OS_MIN = 6,
-    STORAGE_MIN = 7,
-    RAM_REC = 8,
-    CPU_REC = 9,
-    GPU_REC = 10,
-    OS_REC = 11,
-    STORAGE_REC = 12

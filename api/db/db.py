@@ -1,8 +1,9 @@
 import sqlite3
 from flask import current_app, g
 
-from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER, GameEnum
+from api.utils.utils import SQL_OPERATOR_URI_MAPPER
 from api.db.model import Game
+
 
 def get():
     if 'db' not in g:
@@ -39,14 +40,14 @@ def init():
 def insert(game: Game):
     cursor = get_cursor()
 
-    game = (game.name, game.description, game.developer, game.ram_min,
+    t_game = (game.name, game.description, game.developer, game.ram_min,
             game.cpu_min, game.gpu_min, game.OS_min, game.storage_min,
             game.ram_rec, game.cpu_rec, game.gpu_rec, game.OS_rec,
             game.storage_rec)
 
     cursor.execute('''INSERT INTO Games(name,description,developer,ram_min,cpu_min,
     gpu_min,OS_min,storage_min,ram_rec,cpu_rec,gpu_rec,OS_rec,storage_rec) 
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', game)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', t_game)
 
     return cursor.lastrowid
 
@@ -113,7 +114,22 @@ def execute_query(*args, **kwargs):
     return results
 
 
-def deleteall():
+def update(game: Game):
+    cursor = get_cursor()
+
+    t_game = (game.name, game.description, game.developer, game.ram_min,
+              game.cpu_min, game.gpu_min, game.OS_min, game.storage_min,
+              game.ram_rec, game.cpu_rec, game.gpu_rec, game.OS_rec,
+              game.storage_rec, game.id_game)
+
+    cursor.execute('''UPDATE Games SET name = ?, description = ?, developer = ?, 
+                    ram_min = ?, cpu_min = ?, gpu_min = ?, OS_min = ?, storage_min = ?,
+                    ram_rec = ?, cpu_rec = ?, gpu_rec = ?, OS_rec = ?, storage_rec = ?
+                    WHERE id = ?''', t_game)
+    return cursor.rowcount
+
+
+def delete():
     cursor = get_cursor()
 
     cursor.execute('DELETE FROM Games')

@@ -69,6 +69,10 @@ class GameSchema(Schema):
         return Game(**data)
 
 
+class UpdateGameSchema(GameSchema):
+    id_game = fields.Integer(required=True)
+
+
 class Filter:
 
     def __init__(self, op, memory, value):
