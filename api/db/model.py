@@ -1,6 +1,6 @@
-from marshmallow import Schema, fields, post_load, pre_load
+from marshmallow import Schema, fields, post_load, pre_load, validates, ValidationError
 
-from api.utils.utils import convert_numeric_string
+from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER
 
 
 class Game:
@@ -55,5 +55,48 @@ class GameSchema(Schema):
 
     @post_load
     def make_game(self, data, **kwargs):
-        print(data)
         return Game(**data)
+
+
+class Filter:
+
+    def __init__(self, op, memory, value):
+        self.op = op
+        self.memory = memory
+        self.value = value
+
+
+class FilterSchema(Schema):
+    op = fields.Str(required=True)
+    memory = fields.Str(required=True)
+    value = fields.Float(required=True)
+
+    @validates("op")
+    def validate_op(self, val):
+        if val not in SQL_OPERATOR_URI_MAPPER.keys():
+            raise ValidationError("Op must be a valid sql comparison operator")
+
+    @validates("memory")
+    def validate_memory(self, val):
+        if val not in ["ram_min", "ram_rec", "storage_min", "storage_rec"]:
+            raise ValidationError("Memory must be either one among ram_min, ram_rec, storage_min or storage_rec")
+
+    @post_load
+    def make_filter(self, data, **kwargs):
+        return Filter(**data)
+
+
+class Page():
+
+    def __init__(self, last_id, limit):
+        self.last_id = last_id
+        self.limit = limit
+
+
+class PageSchema(Schema):
+    last_id = fields.Integer(required=True)
+    limit = fields.Integer(required=True)
+
+    @post_load
+    def make_filter(self, data, **kwargs):
+        return Page(**data)

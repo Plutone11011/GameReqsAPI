@@ -1,4 +1,4 @@
-from json import dumps
+import json
 from flask import current_app, request, Response
 from marshmallow import ValidationError
 
@@ -12,9 +12,11 @@ def insert_game():
     try:
         game = game_schema.load(request.json)
         id = db.insert(game)
-        return Response(dumps({'insertedGameId': id}), status=201, mimetype='application/json')
+        return Response(json.dumps({'insertedGameId': id}), status=201, mimetype='application/json')
+    except json.JSONDecodeError as err:
+        return validate.validate({'insert_body': err.msg})
     except ValidationError as err:
-        return validate.validate_insert(err.messages)
+        return validate.validate(err.messages)
 
 
 def delete_game():

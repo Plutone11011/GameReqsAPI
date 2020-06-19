@@ -60,10 +60,10 @@ def query_where_clause_filter(filter_parameters):
     for i, filter_params in enumerate(filter_parameters):
 
         if i != len(filter_parameters) - 1:
-            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ? AND '
+            query_string += f'{str(filter_params.memory)} {SQL_OPERATOR_URI_MAPPER[filter_params.op]} ? AND '
         else:
-            query_string += f'{str(filter_params.get("memory"))} {SQL_OPERATOR_URI_MAPPER[filter_params.get("op")]} ?'
-        params.append(str(filter_params.get("value")))
+            query_string += f'{str(filter_params.memory)} {SQL_OPERATOR_URI_MAPPER[filter_params.op]} ?'
+        params.append(str(filter_params.value))
 
     return query_string, tuple(params)
 

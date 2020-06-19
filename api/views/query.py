@@ -1,10 +1,11 @@
 import json
 from flask import jsonify, request, abort
-
+from marshmallow import ValidationError
 
 from api.db import db
 from api.utils.utils import SUBSECTIONS_GAME
-from api.views.validate import validate_filters, validate_pagination
+from api.views.validate import validate
+from api.db.model import PageSchema, FilterSchema
 
 
 def _process_response(resource_attributes: str, games: tuple, pagination=False):
@@ -13,6 +14,7 @@ def _process_response(resource_attributes: str, games: tuple, pagination=False):
 
     for game in games:
         response_obj = {}
+        response_obj['id'] = game.get('id')
         # add different subsections in case it's been specified
         # otherwise add everything
         if resource_attributes == 'info' or not resource_attributes:
@@ -53,21 +55,26 @@ def get_game(resource=None):
     filters = None
 
     if request.args.get('page'):
-        error = validate_pagination(request)
-
-        if error:
-            return error
-        
-        page = json.loads(request.args['page'])
-        limit = page['limit']
-        last_id = page['last_id']
+        page_schema = PageSchema()
+        try:
+            page = page_schema.loads(request.args['page'])
+            limit = page.limit
+            last_id = page.last_id
+        except json.JSONDecodeError as err:
+            return validate({'page': err.msg})
+        except ValidationError as err:
+            return validate(err.messages)
 
     if request.args.get('filters'):
-        error = validate_filters(request)
-        if error:
-            return error
+        filter_schema = FilterSchema(many=True)
         
-        filters = json.loads(request.args['filters'])
+        try:
+            filters = filter_schema.loads(request.args['filters'])
+            print(filters)
+        except json.JSONDecodeError as err:
+            return validate({'filters': err.msg})
+        except ValidationError as err:
+            return validate(err.messages)
 
     if resource:
         games = db.execute_query(*SUBSECTIONS_GAME[resource],
