@@ -38,7 +38,6 @@ async def wrap_generator(generator, task_number):
                 print(err.valid_data)
 
 
-
 async def steamstore_request(begin, end, ids):
     client = http3.AsyncClient()
 

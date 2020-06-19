@@ -88,19 +88,24 @@ def execute_query(*args, **kwargs):
     if not kwargs:
         cursor.execute(query_string)
     else:
-        if kwargs.get('filter_parameters'):
-            query_s, params = query_where_clause_filter(kwargs.get('filter_parameters'))
-            query_string += query_s
-            for param in params:
-                params_values.append(param)        
-        if (kwargs.get('last_id') or kwargs.get('last_id') == 0) and (kwargs.get('limit') or kwargs.get('limit') == 0):
-            if not kwargs.get('filter_parameters'):
-                query_string += 'WHERE id > ? ORDER BY id LIMIT ?'
-            else:
-                query_string += ' AND id > ? ORDER BY id LIMIT ?'
-            params_values.append(kwargs.get('last_id'))
-            params_values.append(kwargs.get('limit'))
-        # maybe other filters?
+        if kwargs.get('name'):
+            query_string += ' WHERE name = ?'
+            params_values.append(kwargs.get('name'))
+        else:
+            if kwargs.get('filter_parameters'):
+                query_s, params = query_where_clause_filter(kwargs.get('filter_parameters'))
+                query_string += query_s
+                for param in params:
+                    params_values.append(param)
+            if (kwargs.get('last_id') or kwargs.get('last_id') == 0) and (
+                    kwargs.get('limit') or kwargs.get('limit') == 0):
+                if not kwargs.get('filter_parameters'):
+                    query_string += 'WHERE id > ? ORDER BY id LIMIT ?'
+                else:
+                    query_string += ' AND id > ? ORDER BY id LIMIT ?'
+                params_values.append(kwargs.get('last_id'))
+                params_values.append(kwargs.get('limit'))
+
         cursor.execute(query_string, tuple(params_values))
 
     for row in cursor.fetchall():

@@ -53,6 +53,7 @@ def get_game(resource=None):
     limit = None
     last_id = None
     filters = None
+    name = request.args.get('name')
 
     if request.args.get('page'):
         page_schema = PageSchema()
@@ -70,7 +71,6 @@ def get_game(resource=None):
         
         try:
             filters = filter_schema.loads(request.args['filters'])
-            print(filters)
         except json.JSONDecodeError as err:
             return validate({'filters': err.msg})
         except ValidationError as err:
@@ -80,10 +80,12 @@ def get_game(resource=None):
         games = db.execute_query(*SUBSECTIONS_GAME[resource],
                                  limit=limit,
                                  last_id=last_id,
-                                 filter_parameters=filters)
+                                 filter_parameters=filters,
+                                 name=name)
     else:
         games = db.execute_query(limit=limit,
                                  last_id=last_id,
-                                 filter_parameters=filters)
+                                 filter_parameters=filters,
+                                 name=name)
 
     return _process_response(resource, games)

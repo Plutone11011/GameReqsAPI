@@ -22,6 +22,17 @@ class Game:
         self.OS_rec = OS_rec
         self.storage_rec = storage_rec
 
+    def __str__(self):
+        s = f'id {self.id_game}\n'
+        s += f'name {self.name}\n'
+        s += f'description {self.description}\n'
+        s += f'ram {self.ram_min} {self.ram_rec}\n'
+        s += f'cpu {self.cpu_min} {self.cpu_rec}\n'
+        s += f'gpu {self.gpu_min} {self.gpu_rec}\n'
+        s += f'OS {self.OS_min} {self.OS_rec}\n'
+        s += f'storage {self.storage_min} {self.storage_rec}\n'
+        return s
+
 
 class GameSchema(Schema):
     id_game = fields.Integer(missing=None)
