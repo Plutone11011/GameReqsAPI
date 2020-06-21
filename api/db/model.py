@@ -89,7 +89,7 @@ class FilterSchema(Schema):
     @validates("op")
     def validate_op(self, val):
         if val not in SQL_OPERATOR_URI_MAPPER.keys():
-            raise ValidationError("Op must be a valid sql comparison operator")
+            raise ValidationError("Op must be either one among eq, neq, gt, ge, le, lt")
 
     @validates("memory")
     def validate_memory(self, val):
