@@ -1,5 +1,7 @@
 import time, os, sys
 from flask import Flask
+from flask_cors import CORS
+
 from api.db import db
 from api.views import dml, query
 from api.utils import commands
@@ -11,15 +13,10 @@ def create_app(test_config=None):
     app.config.from_mapping(
        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    print(app.config['DATABASE'])
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
 
-#    ensure the instance folder exists
+    CORS(app)
+
+    # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:

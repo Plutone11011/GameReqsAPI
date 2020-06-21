@@ -1,4 +1,4 @@
-
+import logging
 
 def parse_tree(soup, game):
     try:
@@ -6,7 +6,7 @@ def parse_tree(soup, game):
         game['description'] = soup.find(class_='game_description_snippet').string.strip('\r\t\n')
         game['developer'] = soup.find('div', attrs={'id': 'developers_list'}).a.string
     except AttributeError:
-        print('Couldn\'t parse name, description or developer')
+        logging.error('Couldn\'t parse name, description or developer')
 
     right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
     left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
@@ -31,7 +31,7 @@ def _parse_requirements(div_requirements: str, game):
                         'Storage': 'storage_rec'}
         _parse_li(requirements, div_requirements, game)
     else:
-        print('No mininum or recommended?')
+        logging.warning('No mininum or recommended?')
 
 
 def _parse_li(requirements: dict, div_requirements: str, game):
@@ -45,7 +45,7 @@ def _parse_li(requirements: dict, div_requirements: str, game):
                     # adds current li child if it's one of the requirements
                     game[requirements[k]] = _parse_text(li)
     except AttributeError:
-        print('No li in unordered list')
+        logging.warning('No li in unordered list')
 
 
 def _parse_text(li_item):
@@ -53,5 +53,5 @@ def _parse_text(li_item):
         li_item.strong.extract()
         li_item.br.extract()
     except AttributeError:
-        print('There was no br or strong tag')
+        logging.warning('There was no br or strong tag')
     return li_item.string

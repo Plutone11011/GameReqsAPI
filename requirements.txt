@@ -4,3 +4,4 @@ python-dotenv==0.13.0
 beautifulsoup4==4.9.1
 http3==0.6.7
 marshmallow==3.6.1
+flask-cors==3.0.8

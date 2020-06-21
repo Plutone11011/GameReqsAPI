@@ -1,4 +1,4 @@
-import http3, json, asyncio
+import http3, json, asyncio, logging
 from bs4 import BeautifulSoup
 from marshmallow import ValidationError
 
@@ -34,8 +34,8 @@ async def wrap_generator(generator, task_number):
                 game_obj = game_schema.load(game)
                 db.insert(game_obj)
             except ValidationError as err:
-                print(err.messages)
-                print(err.valid_data)
+                logging.warning(err.messages) 
+                logging.warning(err.valid_data)
 
 
 async def steamstore_request(begin, end, ids):

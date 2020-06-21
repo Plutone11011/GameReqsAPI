@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, logging
 from flask import current_app, g
 
 from api.utils.utils import SQL_OPERATOR_URI_MAPPER
@@ -10,8 +10,7 @@ def get():
         try:
             g.db = sqlite3.connect(current_app.config['DATABASE'], detect_types=sqlite3.PARSE_DECLTYPES)
         except sqlite3.Error as e:
-            print('Connection error: ' + e)
-#            send user a notification
+            logging.critical('Connection error: ' + e)
         g.db.row_factory = sqlite3.Row
 
     return g.db
