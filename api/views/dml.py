@@ -34,9 +34,13 @@ def update_game():
         return validate(err.messages)
 
 
-def delete_game():
+def delete_game(id_game=None):
 
-    rowcount = db.delete()
+    if id_game:
+        rowcount = db.delete_game(id_game)
+    else:
+        rowcount = db.delete()
+    
 
     if rowcount:
         return '', 204

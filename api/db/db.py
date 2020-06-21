@@ -131,6 +131,15 @@ def update(game: Game):
 def delete():
     cursor = get_cursor()
 
+    logging.warning("Deleting every row")
     cursor.execute('DELETE FROM Games')
+
+    return cursor.rowcount
+
+def delete_game(id_game: int):
+    cursor = get_cursor()
+
+    logging.warning("Deleting a game")
+    cursor.execute('DELETE FROM Games WHERE id = ?', (id_game,))
 
     return cursor.rowcount
