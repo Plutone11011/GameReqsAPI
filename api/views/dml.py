@@ -27,7 +27,7 @@ def update_game():
         if rowcount:
             return '', 200
         else:
-            return '', 404
+            return json.dumps('No resources to update'), 404
     except json.JSONDecodeError as err:
         return validate({'update_body': err.msg})
     except ValidationError as err:
@@ -45,5 +45,5 @@ def delete_game(id_game=None):
     if rowcount:
         return '', 204
     else:
-        return '', 404
+        return json.dumps('No resources to delete'), 404
 

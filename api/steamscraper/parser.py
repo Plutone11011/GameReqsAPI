@@ -1,23 +1,26 @@
 import logging
 
+
 def parse_tree(soup, game):
-    try:
-        game['name'] = soup.find(class_='apphub_AppName').string
-        game['description'] = soup.find(class_='game_description_snippet').string.strip('\r\t\n')
-        game['developer'] = soup.find('div', attrs={'id': 'developers_list'}).a.string
-    except AttributeError:
-        logging.error('Couldn\'t parse name, description or developer')
+    # exclude soundtracks
+    if not soup.find(class_='music_album_description'):
+        try:
+            game['name'] = soup.find(class_='apphub_AppName').string
+            game['description'] = soup.find(class_='game_description_snippet').string.strip('\r\t\n')
+            game['developer'] = soup.find('div', attrs={'id': 'developers_list'}).a.string
+        except AttributeError:
+            logging.error('Couldn\'t parse name, description or developer')
 
-    right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
-    left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
+        right_div_requirements = soup.find('div', class_='game_area_sys_req_rightCol')
+        left_div_requirements = soup.find('div', class_='game_area_sys_req_leftCol')
 
-    _parse_requirements(right_div_requirements, game)
-    _parse_requirements(left_div_requirements, game)
-    # some games do not have left and right div for minimum
-    # and recommended requirements respectively
-    if 'ram_min' not in game and 'ram_rec' not in game:
-        div_requirements = soup.find('div', class_='game_area_sys_req_full')
-        _parse_requirements(div_requirements, game)
+        _parse_requirements(right_div_requirements, game)
+        _parse_requirements(left_div_requirements, game)
+        # some games do not have left and right div for minimum
+        # and recommended requirements respectively
+        if 'ram_min' not in game and 'ram_rec' not in game:
+            div_requirements = soup.find('div', class_='game_area_sys_req_full')
+            _parse_requirements(div_requirements, game)
 
 
 def _parse_requirements(div_requirements: str, game):
