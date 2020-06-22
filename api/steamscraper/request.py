@@ -44,7 +44,7 @@ async def steam_request(url, session):
                 try:
                     game_schema = model.GameSchema()
                     game_obj = game_schema.load(game)
-                    db.insert(game_obj)
+                    db.insert_game(game_obj)
                 except ValidationError as err:
                     logging.warning(err.messages)
                     logging.warning(err.valid_data)

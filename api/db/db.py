@@ -36,7 +36,7 @@ def init():
         db.executescript(f.read().decode('utf8'))
 
 
-def insert(game: Game):
+def insert_game(game: Game):
     cursor = get_cursor()
 
     t_game = (game.name, game.description, game.developer, game.ram_min,
@@ -68,7 +68,7 @@ def query_where_clause_filter(filter_parameters):
     return query_string, tuple(params)
 
 
-def execute_query(*args, **kwargs):
+def game_query(*args, **kwargs):
     """ executes query with keyword parameters
         given by url query and picks only columns defined in args"""
     cursor = get_cursor()
@@ -113,7 +113,7 @@ def execute_query(*args, **kwargs):
     return results
 
 
-def update(game: Game):
+def update_game(game: Game):
     cursor = get_cursor()
 
     t_game = (game.name, game.description, game.developer, game.ram_min,
@@ -128,18 +128,14 @@ def update(game: Game):
     return cursor.rowcount
 
 
-def delete():
-    cursor = get_cursor()
-
-    logging.warning("Deleting every row")
-    cursor.execute('DELETE FROM Games')
-
-    return cursor.rowcount
-
 def delete_game(id_game: int):
     cursor = get_cursor()
 
-    logging.warning("Deleting a game")
-    cursor.execute('DELETE FROM Games WHERE id = ?', (id_game,))
+    if id_game:
+        logging.warning("Deleting a game resource")
+        cursor.execute('DELETE FROM Games WHERE id = ?', (id_game,))
+    else:
+        logging.warning("Deleting every row")
+        cursor.execute('DELETE FROM Games')
 
     return cursor.rowcount

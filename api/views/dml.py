@@ -11,7 +11,7 @@ def insert_game():
     game_schema = GameSchema()
     try:
         game = game_schema.load(request.json)
-        id = db.insert(game)
+        id = db.insert_game(game)
         return Response(json.dumps({'insertedGameId': id}), status=201, mimetype='application/json')
     except json.JSONDecodeError as err:
         return validate({'insert_body': err.msg})
@@ -23,7 +23,7 @@ def update_game():
     game_schema = UpdateGameSchema()
     try:
         game = game_schema.load(request.json)
-        rowcount = db.update(game)
+        rowcount = db.update_game(game)
         if rowcount:
             return '', 200
         else:
@@ -36,11 +36,7 @@ def update_game():
 
 def delete_game(id_game=None):
 
-    if id_game:
-        rowcount = db.delete_game(id_game)
-    else:
-        rowcount = db.delete()
-    
+    rowcount = db.delete_game(id_game)
 
     if rowcount:
         return '', 204

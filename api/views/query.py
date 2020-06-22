@@ -77,15 +77,15 @@ def get_game(resource=None):
             return validate(err.messages)
 
     if resource:
-        games = db.execute_query(*SUBSECTIONS_GAME[resource],
-                                 limit=limit,
-                                 last_id=last_id,
-                                 filter_parameters=filters,
-                                 name=name)
+        games = db.game_query(*SUBSECTIONS_GAME[resource],
+                              limit=limit,
+                              last_id=last_id,
+                              filter_parameters=filters,
+                              name=name)
     else:
-        games = db.execute_query(limit=limit,
-                                 last_id=last_id,
-                                 filter_parameters=filters,
-                                 name=name)
+        games = db.game_query(limit=limit,
+                              last_id=last_id,
+                              filter_parameters=filters,
+                              name=name)
 
     return _process_response(resource, games)
