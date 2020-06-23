@@ -33,14 +33,14 @@ Making a request to `/games` with no parameters returns a list of every resource
 
 #### Query parameters
 
-* **name**: search by game's name (*optional*)
-* **page**: a url-encoded JSON object that allows pagination of results. Ignored if used with name search. Needs two properties:
-    * **limit**: maximum number of returned results
-    * **last_id**: indicates that the next page will yield games from *last_id+1* onward
-* **filter**: a url-encoded array of JSON objects that allows filtering over RAM and storage. Can be combined with pagination. Every object needs 3 properties:
-    * **op**: a comparison operator string (eq, neq, gt, ge, le, lt)
-    * **memory**: the name of the property (storage or ram)
-    * **value**: value that need to be filtered
+* **name**(*optional*): search by game's name 
+* **page**(*optional*): a url-encoded JSON object that allows pagination of results. Ignored if used with name search. Needs two properties:
+    * **limit**(*required*): maximum number of returned results
+    * **last_id**(*required*): indicates that the next page will yield games from *last_id+1* onward
+* **filter**(*optional*): a url-encoded array of JSON objects that allows filtering over RAM and storage. Can be combined with pagination. Every object needs 3 properties:
+    * **op**(*required*): a comparison operator string (eq, neq, gt, ge, le, lt)
+    * **memory**(*required*): the name of the property (storage or ram)
+    * **value**(*required*): value that need to be filtered
 
 ### Games response object
 
@@ -83,6 +83,13 @@ In particular, it returns only the `minimum_requirements` object of the games re
 This resource yields a subset of informations of the game resource. The endpoint is `/games/recommended_requirements`
 In particular, it returns only the `recommended_requirements` object of the games response object. As such, it accepts the same parameters as the **Games** resource.
 
+### Data modification
+It is possible to create new resources with `POST /games`.
+The body is a JSON containing all the properties described in the Games resource. The only required value here is *name*.
+
+The API provides also a way to update resources with `PUT /games`. The object is the same as the POST request, with the only difference being the id, which is a required field.
+
+It's possible to delete resources too, with `DELETE /games/<id_game>`.
 
 ## Contributing
 Contributions are encouraged. Please refer to CONTRIBUTING.md
