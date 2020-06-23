@@ -4,7 +4,7 @@ Welcome!<br>
 Everyone is welcome to contribute to this project, whether you just want to have a go at API development, you have
 something to add to the scraper, or you simply like Python and Flask.
 
-##Getting started
+## Getting started
 
 If you're new to Git and Github, this is a [good place to start](https://guides.github.com/activities/hello-world/).
 
@@ -19,7 +19,7 @@ After you've cloned locally your fork, you can start to contribute. If you want 
 you're encouraged to create a new branch. Keep tabs on [the issues section](https://github.com/Plutone11011/GameReqsAPI/issues)
 for things to work on, or feel free to open new issues yourself if you think there is something that needs to be fixed or improved.
 
-##The environment
+## The environment
 
 Once you have a local copy, there are a few steps before you can test the API.<br>
 You need to first create a `.flaskenv` file inside the project directory (same level as api package)
