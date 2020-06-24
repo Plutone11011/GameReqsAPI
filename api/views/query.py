@@ -87,5 +87,7 @@ def get_game(resource=None):
                               last_id=last_id,
                               filter_parameters=filters,
                               name=name)
-
-    return _process_response(resource, games)
+    if games:
+        return _process_response(resource, games)
+    else:
+        return json.dumps('No resources to get'), 404
