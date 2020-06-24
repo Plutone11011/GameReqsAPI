@@ -48,7 +48,7 @@ def get_game(resource=None):
     """view for game queries, validate query parameters
         and pass them to db"""
     if resource and resource not in SUBSECTIONS_GAME:
-        abort(404)
+        return json.dumps(f'No endpoint for resource {resource}'), 404
 
     limit = None
     last_id = None
