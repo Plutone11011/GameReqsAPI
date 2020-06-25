@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, post_load, pre_load, validates, ValidationError
 
-from api.utils.utils import convert_numeric_string, SQL_OPERATOR_URI_MAPPER
+from api.utils.utils import convert_numeric_string, OPERATOR_URI_MAPPER
 
 
 class Game:
@@ -88,7 +88,7 @@ class FilterSchema(Schema):
 
     @validates("op")
     def validate_op(self, val):
-        if val not in SQL_OPERATOR_URI_MAPPER.keys():
+        if val not in OPERATOR_URI_MAPPER.keys():
             raise ValidationError("Op must be either one among eq, neq, gt, ge, le, lt")
 
     @validates("memory")

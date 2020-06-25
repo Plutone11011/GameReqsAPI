@@ -1,13 +1,12 @@
-import re
-from enum import IntEnum
+import re, operator
 
-SQL_OPERATOR_URI_MAPPER = {
-    'eq': '=',
-    'neq': '<>',
-    'gt': '>',
-    'ge': '>=',
-    'lt': '<',
-    'le': '<=',
+OPERATOR_URI_MAPPER = {
+    'eq': operator.eq,
+    'neq': operator.ne,
+    'gt': operator.gt,
+    'ge': operator.ge,
+    'lt': operator.lt,
+    'le': operator.le,
 }
 
 # grouping of names of tables's column

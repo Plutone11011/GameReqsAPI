@@ -50,8 +50,7 @@ def get_game(resource=None):
     if resource and resource not in SUBSECTIONS_GAME:
         return json.dumps(f'No endpoint for resource {resource}'), 404
 
-    limit = None
-    last_id = None
+    page=None
     filters = None
     name = request.args.get('name')
 
@@ -59,8 +58,6 @@ def get_game(resource=None):
         page_schema = PageSchema()
         try:
             page = page_schema.loads(request.args['page'])
-            limit = page.limit
-            last_id = page.last_id
         except json.JSONDecodeError as err:
             return validate({'page': err.msg})
         except ValidationError as err:
@@ -78,14 +75,12 @@ def get_game(resource=None):
 
     if resource:
         games = db.game_query(*SUBSECTIONS_GAME[resource],
-                              limit=limit,
-                              last_id=last_id,
-                              filter_parameters=filters,
+                              page=page,
+                              filters=filters,
                               name=name)
     else:
-        games = db.game_query(limit=limit,
-                              last_id=last_id,
-                              filter_parameters=filters,
+        games = db.game_query(page=page,
+                              filters=filters,
                               name=name)
     if games:
         return _process_response(resource, games)
