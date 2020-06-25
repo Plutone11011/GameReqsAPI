@@ -34,10 +34,10 @@ Making a request to `/games` with no parameters returns a list of every resource
 #### Query parameters
 
 * **name**(*optional*): search by game's name 
-* **page**(*optional*): a url-encoded JSON object that allows pagination of results. Ignored if used with name search. Needs two properties:
+* **page**(*optional*): a url-encoded JSON object that allows pagination of results. Needs two properties:
     * **limit**(*required*): maximum number of returned results
     * **last_id**(*required*): indicates that the next page will yield games from *last_id+1* onward
-* **filter**(*optional*): a url-encoded array of JSON objects that allows filtering over RAM and storage. Can be combined with pagination. Every object needs 3 properties:
+* **filter**(*optional*): a url-encoded array of JSON objects that allows filtering over RAM and storage. Every object needs 3 properties:
     * **op**(*required*): a comparison operator string (eq, neq, gt, ge, le, lt)
     * **memory**(*required*): the name of the property (storage or ram)
     * **value**(*required*): value that need to be filtered
