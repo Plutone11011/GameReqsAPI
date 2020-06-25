@@ -28,7 +28,6 @@ class GameQueryBuilder:
 
         for filter in filters:
             self.query_builder = self.query_builder.where(OPERATOR_URI_MAPPER[filter.op](pypika.Parameter(filter.memory), pypika.Parameter(' ? ')))
-            print(str(self.query_builder))
             self.params['where_params'].append(filter.value)
 
     def param_builder(self):

@@ -59,8 +59,6 @@ def game_query(*args, **kwargs):
 
     game_query_builder = GameQueryBuilder(*args)
 
-    params_values = []
-
     query_functions = {
         'name': game_query_builder.name_query,
         'page': game_query_builder.pagination_query,

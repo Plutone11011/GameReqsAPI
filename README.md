@@ -42,6 +42,8 @@ Making a request to `/games` with no parameters returns a list of every resource
     * **memory**(*required*): the name of the property (storage or ram)
     * **value**(*required*): value that need to be filtered
 
+An example with filters and pagination: `/games?pagefilters=[{"memory":"ram_min","op":"lt", "value":1}]&page={"last_id":70000, "limit":10}`
+
 ### Games response object
 
 ```
