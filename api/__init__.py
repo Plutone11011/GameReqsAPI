@@ -1,5 +1,5 @@
 import time, os, sys
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 
 from api.db import db
@@ -9,7 +9,9 @@ from api.utils import commands
 
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, 
+                instance_relative_config=True, 
+                template_folder='./templates')
     app.config.from_mapping(
        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
@@ -24,8 +26,7 @@ def create_app(test_config=None):
 
     @app.route('/', methods=['GET'])
     def home():
-        return '''<h1>Your PC benchmarking API</h1>
-        <p>A prototype API to visualize the best games you can play with your current setup</p>'''
+        return render_template('index.html'), 200
 
     register_endpoints(app)
 
