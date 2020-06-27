@@ -29,6 +29,7 @@ Thus, the file must contain the following variables:
 ```
 FLASK_ENV=development
 FLASK_APP=api/__init__.py
+API_KEY=cf7c9541c2b477a00cbe2549cda1b5c118c75f7f7a2448eebd831611
 ```
 Then, you need to [create a virtualenv](https://docs.python.org/3/library/venv.html). <br>
 After you've created it, you need to activate it. <br>

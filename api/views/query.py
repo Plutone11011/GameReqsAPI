@@ -6,6 +6,7 @@ from api.db import db
 from api.utils.utils import SUBSECTIONS_GAME
 from api.views.validate import validate
 from api.db.model import PageSchema, FilterSchema
+from api.utils.authorizers import require_api_key
 
 
 def _process_response(resource_attributes: str, games: tuple, pagination=False):
@@ -44,6 +45,7 @@ def _process_response(resource_attributes: str, games: tuple, pagination=False):
     return jsonify(response)
 
 
+@require_api_key
 def get_game(resource=None):
     """view for game queries, validate query parameters
         and pass them to db"""

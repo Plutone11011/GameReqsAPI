@@ -5,8 +5,10 @@ from marshmallow import ValidationError
 from api.db import db
 from api.db.model import GameSchema, Game, UpdateGameSchema
 from api.views.validate import validate
+from api.utils.authorizers import require_api_key
 
 
+@require_api_key
 def insert_game():
     game_schema = GameSchema()
     try:
@@ -19,6 +21,7 @@ def insert_game():
         return validate(err.messages)
 
 
+@require_api_key
 def update_game():
     game_schema = UpdateGameSchema()
     try:
@@ -34,12 +37,11 @@ def update_game():
         return validate(err.messages)
 
 
+@require_api_key
 def delete_game(id_game=None):
-
     rowcount = db.delete_game(id_game)
 
     if rowcount:
         return '', 204
     else:
         return json.dumps('No resources to delete'), 404
-
