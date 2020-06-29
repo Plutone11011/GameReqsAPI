@@ -11,9 +11,9 @@ OPERATOR_URI_MAPPER = {
 
 # grouping of names of tables's column
 SUBSECTIONS_GAME = {
-    'info':['name','description','developer'],
-    'minimum_requirements':['ram_min','cpu_min','gpu_min','OS_min','storage_min'],
-    'recommended_requirements':['ram_rec','cpu_rec','gpu_rec','OS_rec','storage_rec']
+    'info':['id', 'name','description','developer'],
+    'minimum_requirements':['id', 'ram_min','cpu_min','gpu_min','OS_min','storage_min'],
+    'recommended_requirements':['id', 'ram_rec','cpu_rec','gpu_rec','OS_rec','storage_rec']
 }
 
 
