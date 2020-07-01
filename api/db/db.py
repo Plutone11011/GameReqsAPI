@@ -62,7 +62,8 @@ def game_query(*args, **kwargs):
     query_functions = {
         'name': game_query_builder.name_query,
         'page': game_query_builder.pagination_query,
-        'filters': game_query_builder.filter_query
+        'filters': game_query_builder.filter_query,
+        'developer': game_query_builder.developer_query
     }
     for k, v in kwargs.items():
         if v:

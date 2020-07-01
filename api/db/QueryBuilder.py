@@ -19,6 +19,11 @@ class GameQueryBuilder:
         name = name.replace('"', '', 2)
         self.params['where_params'].append(name)
 
+    def developer_query(self, developer: str):
+        self.query_builder = self.query_builder.where(self.game.developer == pypika.Parameter(' ? '))
+        developer = developer.replace('"', '', 2)
+        self.params['where_params'].append(developer)
+
     def pagination_query(self, page: Page):
         self.query_builder = self.query_builder.where(self.game.id > pypika.Parameter(' ? ')).limit(pypika.Parameter(' ? '))
         self.params['where_params'].append(page.last_id)

@@ -55,6 +55,7 @@ def get_game(resource=None):
     page=None
     filters = None
     name = request.args.get('name')
+    developer = request.args.get('dev')
 
     if request.args.get('page'):
         page_schema = PageSchema()
@@ -79,11 +80,13 @@ def get_game(resource=None):
         games = db.game_query(*SUBSECTIONS_GAME[resource],
                               page=page,
                               filters=filters,
-                              name=name)
+                              name=name,
+                              developer=developer)
     else:
         games = db.game_query(page=page,
                               filters=filters,
-                              name=name)
+                              name=name,
+                              developer=developer)
     if games:
         return _process_response(resource, games)
     else:
