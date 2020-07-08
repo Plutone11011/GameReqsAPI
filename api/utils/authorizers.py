@@ -8,7 +8,7 @@ from flask import request
 def require_api_key(view_func):
     @wraps(view_func)
     def authorize(*args, **kwargs):
-        key = os.environ.get('API_KEY')
+        key = os.getenv('API_KEY')
         if request.headers.get('x-api-key') and request.headers.get('x-api-key') == key:
             return view_func(*args, **kwargs)
         else:

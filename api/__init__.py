@@ -1,6 +1,7 @@
-import time, os, sys
+import os
 from flask import Flask, render_template
 from flask_cors import CORS
+from dotenv import load_dotenv
 
 from api.db import db
 from api.views import dml, query
