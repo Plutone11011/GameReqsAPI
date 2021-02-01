@@ -4,7 +4,7 @@
 GameReqs API provides endpoints to gain informations about games' system requirements. Data is scraped from Steam store(might add other sources in the future).
 
 ## URI and versioning
-Every endpoint is prefixed with http://Plutone11011.pythonanywhere.com/api/v1/. The API is currently in its first iteration. Also, every request needs to contain an api key with _x-api-key_ header. Refer to CONTRIBUTING.md for further informations.
+Every endpoint is prefixed with http://plutone00100.pythonanywhere.com/api/v1/. The API is currently in its first iteration. Also, every request needs to contain an api key with _x-api-key_ header. Refer to CONTRIBUTING.md for further informations.
 
 # Resources
 
